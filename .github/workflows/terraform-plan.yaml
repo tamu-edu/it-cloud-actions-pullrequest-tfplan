@@ -1,0 +1,79 @@
+name: 'Terraform Plan to Pull Request'
+description: 'This workflow will generate and post a terraform plan to a pull request.'
+inputs:
+  debug:
+    description: Debug workflow with tmate if an error occurs
+    required: false
+    default: "false"
+outputs:
+  plan:
+    description: 'The plan output'
+    value: ${{ format('{0}{1}', steps.init.outputs.stdout, steps.init.outputs.stderr) }}
+runs:
+  using: "composite"
+  steps:
+    - name: setup Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: install terraform-plan-summary
+      run: |
+        REPO="dineshba/terraform-plan-summary"
+        curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.zip
+        tmpDir=$(mktemp -d -t tmp.XXXXXXXXXX)
+        mv tf-summarize_linux_amd64.zip $tmpDir
+        cd $tmpDir
+        unzip tf-summarize_linux_amd64.zip
+        chmod +x tf-summarize
+        echo $PWD >> $GITHUB_PATH
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    - name: Post Init
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: robburger/terraform-pr-commenter@v1
+      with:
+        commenter_type: init
+        commenter_input: ${{ format('{0}{1}', steps.init.outputs.stdout, steps.init.outputs.stderr) }}
+        commenter_exitcode: ${{ steps.init.outputs.exitcode }}
+
+    - name: Terraform Plan
+      id: plan
+      run: |
+        terraform plan -out=tfplan
+      continue-on-error: true
+
+    - name: generate tf-summarize table
+      id: summary
+      run: |
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+
+        echo "table<<$EOF" >> $GITHUB_OUTPUT
+        terraform show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
+
+    - name: Post terraform plan
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: robburger/terraform-pr-commenter@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        commenter_type: plan
+        commenter_input: ${{ format('{0}{1}{2}', steps.summary.outputs.table, steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+        commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+
+    - name: Save Artifact
+      id: save-artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: pull_request_plans/${{ github.event.pull_request.number }}-tf-plan
+        path: tfplan
+
+    - name: Debug with TMATE if the debug environment variable is set to "true" and something failed
+      if: ${{ (failure() || steps.plan.outcome == 'failure') && inputs.debug == 'true' }}
+      uses: mxschmitt/action-tmate@v3
+
+    - name: Workflow Run Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
