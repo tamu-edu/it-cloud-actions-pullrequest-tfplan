@@ -8,6 +8,10 @@ inputs:
   GITHUB_TOKEN:
     description: GitHub token for access to the pull request
     required: true
+  working-directory:
+    description: Working directory for the `run` actions
+    required: false
+    default: '/'
 outputs:
   plan:
     description: 'The plan output'
@@ -33,6 +37,7 @@ runs:
     - name: Terraform Init
       id: init
       shell: /bin/bash
+      working-directory: ${{ inputs.working-directory }}
       run: terraform init
 
     - name: Post Init
@@ -48,6 +53,7 @@ runs:
     - name: Terraform Plan
       id: plan
       shell: /bin/bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         terraform plan -out=tfplan
       continue-on-error: true
@@ -55,6 +61,7 @@ runs:
     - name: generate tf-summarize table
       id: summary
       shell: /bin/bash
+      working-directory: ${{ inputs.working-directory }}
       run: |
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
 
@@ -77,7 +84,7 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: pull_request_plans/${{ github.event.pull_request.number }}-tf-plan
-        path: tfplan
+        path: ${{ inputs.working-directory }}/tfplan
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
