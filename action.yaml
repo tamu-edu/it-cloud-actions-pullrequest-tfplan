@@ -65,6 +65,10 @@ runs:
       run: |
         EOF=$(openssl rand -hex 8)
 
+        ls
+        terraform show -json tfplan
+        terraform show -json tfplan | tf-summarize -md
+
         echo "table<<$EOF" >> $GITHUB_OUTPUT
         terraform show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
