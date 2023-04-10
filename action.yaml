@@ -5,6 +5,9 @@ inputs:
     description: Debug workflow with tmate if an error occurs
     required: false
     default: "false"
+  GITHUB_TOKEN:
+    description: GitHub token for access to the pull request
+    required: true
 outputs:
   plan:
     description: 'The plan output'
@@ -37,6 +40,8 @@ runs:
         commenter_type: init
         commenter_input: ${{ format('{0}{1}', steps.init.outputs.stdout, steps.init.outputs.stderr) }}
         commenter_exitcode: ${{ steps.init.outputs.exitcode }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
     - name: Terraform Plan
       id: plan
@@ -56,12 +61,12 @@ runs:
     - name: Post terraform plan
       if: ${{ github.event_name == 'pull_request' }}
       uses: robburger/terraform-pr-commenter@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         commenter_type: plan
         commenter_input: ${{ format('{0}{1}{2}', steps.summary.outputs.table, steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
     - name: Save Artifact
       id: save-artifact
@@ -69,6 +74,8 @@ runs:
       with:
         name: pull_request_plans/${{ github.event.pull_request.number }}-tf-plan
         path: tfplan
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
     - name: Debug with TMATE if the debug environment variable is set to "true" and something failed
       if: ${{ (failure() || steps.plan.outcome == 'failure') && inputs.debug == 'true' }}
