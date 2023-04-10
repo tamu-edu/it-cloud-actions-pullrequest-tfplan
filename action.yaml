@@ -19,6 +19,7 @@ runs:
       uses: hashicorp/setup-terraform@v2
 
     - name: install terraform-plan-summary
+      shell: /bin/bash
       run: |
         REPO="dineshba/terraform-plan-summary"
         curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.zip
@@ -31,6 +32,7 @@ runs:
 
     - name: Terraform Init
       id: init
+      shell: /bin/bash
       run: terraform init
 
     - name: Post Init
@@ -45,12 +47,14 @@ runs:
 
     - name: Terraform Plan
       id: plan
+      shell: /bin/bash
       run: |
         terraform plan -out=tfplan
       continue-on-error: true
 
     - name: generate tf-summarize table
       id: summary
+      shell: /bin/bash
       run: |
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
 
@@ -82,5 +86,6 @@ runs:
       uses: mxschmitt/action-tmate@v3
 
     - name: Workflow Run Status
+      shell: /bin/bash
       if: steps.plan.outcome == 'failure'
       run: exit 1
