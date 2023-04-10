@@ -58,6 +58,11 @@ runs:
         terraform plan -out=tfplan
       continue-on-error: true
 
+    - name: setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        wrapper: false
+
     - name: generate tf-summarize table
       id: summary
       shell: bash
@@ -65,14 +70,13 @@ runs:
       run: |
         EOF=$(openssl rand -hex 8)
 
-        ls
-        terraform show -json tfplan
-        terraform show -json tfplan | tf-summarize -md
-
         echo "table<<$EOF" >> $GITHUB_OUTPUT
         terraform show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
 
+    - name: setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      
     - name: Post terraform plan
       if: ${{ github.event_name == 'pull_request' }}
       uses: robburger/terraform-pr-commenter@v1
