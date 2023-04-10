@@ -23,7 +23,7 @@ runs:
       uses: hashicorp/setup-terraform@v2
 
     - name: install terraform-plan-summary
-      shell: /bin/bash
+      shell: bash
       run: |
         REPO="dineshba/terraform-plan-summary"
         curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.zip
@@ -36,7 +36,7 @@ runs:
 
     - name: Terraform Init
       id: init
-      shell: /bin/bash
+      shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: terraform init
 
@@ -52,7 +52,7 @@ runs:
 
     - name: Terraform Plan
       id: plan
-      shell: /bin/bash
+      shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
         terraform plan -out=tfplan
@@ -60,7 +60,7 @@ runs:
 
     - name: generate tf-summarize table
       id: summary
-      shell: /bin/bash
+      shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
@@ -91,8 +91,9 @@ runs:
     - name: Debug with TMATE if the debug environment variable is set to "true" and something failed
       if: ${{ (failure() || steps.plan.outcome == 'failure') && inputs.debug == 'true' }}
       uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 5
 
     - name: Workflow Run Status
-      shell: /bin/bash
+      shell: bash
       if: steps.plan.outcome == 'failure'
       run: exit 1
