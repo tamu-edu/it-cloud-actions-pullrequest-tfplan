@@ -91,7 +91,6 @@ runs:
     - name: Debug with TMATE if the debug environment variable is set to "true" and something failed
       if: ${{ (failure() || steps.plan.outcome == 'failure') && inputs.debug == 'true' }}
       uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 5
 
     - name: Workflow Run Status
       shell: bash
