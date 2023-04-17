@@ -20,6 +20,11 @@ inputs:
     description: Terraform workspace to select. Must already exist 
     required: false
     default: default
+  terraform-init-flags:
+    description: CLI flags to use with terraform init
+    required: false
+    default: ""
+
 outputs:
   plan:
     description: 'The plan output'
@@ -48,7 +53,7 @@ runs:
       id: init
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: terraform init
+      run: terraform init ${{ inputs.terraform-init-flags }}
 
     - name: Post Init
       if: ${{ github.event_name == 'pull_request' }}
