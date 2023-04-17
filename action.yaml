@@ -12,6 +12,10 @@ inputs:
     description: Working directory for the `run` actions
     required: false
     default: '/'
+  terraform-version:
+    description: Version of terraform to install
+    required: false
+    default: latest
 outputs:
   plan:
     description: 'The plan output'
@@ -21,6 +25,8 @@ runs:
   steps:
     - name: setup Terraform
       uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ inputs.terraform-version }}
 
     - name: install terraform-plan-summary
       shell: bash
