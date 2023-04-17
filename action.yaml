@@ -67,7 +67,8 @@ runs:
         commenter_exitcode: ${{ steps.init.outputs.exitcode }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-
+        TF_WORKSPACE: ${{ inputs.terraform-workspace }}
+        
     - name: Terraform Plan
       id: plan
       shell: bash
@@ -100,6 +101,7 @@ runs:
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+        TF_WORKSPACE: ${{ inputs.terraform-workspace }}
 
     - name: Save Artifact
       id: save-artifact
