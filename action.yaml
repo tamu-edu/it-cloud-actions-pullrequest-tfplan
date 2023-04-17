@@ -79,25 +79,25 @@ runs:
         terraform plan -out=tfplan
       continue-on-error: true
 
-    # - name: generate tf-summarize table
-    #   id: summary
-    #   shell: bash
-    #   working-directory: ${{ inputs.working-directory }}
-    #   env:
-    #     TF_WORKSPACE: ${{ inputs.terraform-workspace }}
-    #   run: |
-    #     EOF=$(openssl rand -hex 8)
+    - name: generate tf-summarize table
+      id: summary
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        TF_WORKSPACE: ${{ inputs.terraform-workspace }}
+      run: |
+        EOF=$(openssl rand -hex 8)
 
-    #     echo "table<<$EOF" >> $GITHUB_OUTPUT
-    #     terraform-bin show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
-    #     echo "$EOF" >> $GITHUB_OUTPUT
+        echo "table<<$EOF" >> $GITHUB_OUTPUT
+        terraform-bin show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Post terraform plan
       if: ${{ github.event_name == 'pull_request' }}
       uses: joraff/terraform-pr-commenter@master
       with:
         commenter_type: plan
-        commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+        commenter_input: ${{ format('{0}\n\n{1}{2}', steps.summary.outputs.table, steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
