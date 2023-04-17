@@ -88,7 +88,7 @@ runs:
         EOF=$(openssl rand -hex 8)
 
         echo "table<<$EOF" >> $GITHUB_OUTPUT
-        terraform show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
+        terraform-bin show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Post terraform plan
