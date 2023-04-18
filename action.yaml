@@ -97,7 +97,7 @@ runs:
       uses: tamu-edu/it-ae-actions-terraform-pr-commenter@dev
       with:
         commenter_type: plan
-        commenter_input: ${{ format('### Terraform Plan Summary\n{0}\n\n{1}{2}', steps.summary.outputs.table, steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+        commenter_input: ${{ format('### Terraform Plan Summary\n{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
         commenter_plan_path: tfplan
         comment_prepend: Hello from this side!
