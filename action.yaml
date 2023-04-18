@@ -99,7 +99,9 @@ runs:
         commenter_type: plan
         commenter_input: ${{ format('### Terraform Plan Summary\n{0}\n\n{1}{2}', steps.summary.outputs.table, steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
-        commenter_plan_file: tfplan
+        commenter_plan_path: tfplan
+        comment_prepend: Hello from this side!
+        comment_append: Hello from the other side!
         summary_table: 'true'
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
