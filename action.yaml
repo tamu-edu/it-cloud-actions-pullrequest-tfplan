@@ -40,17 +40,17 @@ runs:
       with:
         terraform_version: ${{ inputs.terraform-version }}
 
-    # - name: install terraform-plan-summary
-    #   shell: bash
-    #   run: |
-    #     REPO="dineshba/terraform-plan-summary"
-    #     curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.zip
-    #     tmpDir=$(mktemp -d -t tmp.XXXXXXXXXX)
-    #     mv tf-summarize_linux_amd64.zip $tmpDir
-    #     cd $tmpDir
-    #     unzip tf-summarize_linux_amd64.zip
-    #     chmod +x tf-summarize
-    #     echo $PWD >> $GITHUB_PATH
+    - name: install terraform-plan-summary
+      shell: bash
+      run: |
+        REPO="dineshba/terraform-plan-summary"
+        curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.zip
+        tmpDir=$(mktemp -d -t tmp.XXXXXXXXXX)
+        mv tf-summarize_linux_amd64.zip $tmpDir
+        cd $tmpDir
+        unzip tf-summarize_linux_amd64.zip
+        chmod +x tf-summarize
+        echo $PWD >> $GITHUB_PATH
 
     - name: Terraform Init
       id: init
@@ -79,18 +79,18 @@ runs:
         terraform plan -out=tfplan
       continue-on-error: true
 
-    # - name: generate tf-summarize table
-    #   id: summary
-    #   shell: bash
-    #   working-directory: ${{ inputs.working-directory }}
-    #   env:
-    #     TF_WORKSPACE: ${{ inputs.terraform-workspace }}
-    #   run: |
-    #     EOF=$(openssl rand -hex 8)
+    - name: generate tf-summarize table
+      id: summary
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        TF_WORKSPACE: ${{ inputs.terraform-workspace }}
+      run: |
+        EOF=$(openssl rand -hex 8)
 
-    #     echo "table<<$EOF" >> $GITHUB_OUTPUT
-    #     terraform-bin show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
-    #     echo "$EOF" >> $GITHUB_OUTPUT
+        echo "table<<$EOF" >> $GITHUB_OUTPUT
+        terraform-bin show -json tfplan | tf-summarize -md >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Post terraform plan
       if: ${{ github.event_name == 'pull_request' }}
@@ -99,11 +99,11 @@ runs:
         commenter_type: plan
         commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
-        commenter_plan_path: tfplan
-        comment_prepend: Hello from this side!
+        # commenter_plan_path: tfplan
+        comment_prepend: ${{ steps.summary.outputs.table }}
         comment_append: Hello from the other side!
-        summary_table: 'true'
-        working-directory: compliance
+        # summary_table: 'true'
+        # working-directory: compliance
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         TF_WORKSPACE: ${{ inputs.terraform-workspace }}
