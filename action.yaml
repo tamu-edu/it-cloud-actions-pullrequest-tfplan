@@ -35,6 +35,9 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - shell: bash
+      run: pwd && ls -la
+
     - name: setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:

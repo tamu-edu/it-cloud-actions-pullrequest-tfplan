@@ -1,0 +1,14 @@
+name: Test Composite Action
+on:
+  workflow_dispatch:
+
+
+jobs:
+  test-workingdir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: tamu-edu/it-ae-actions-pullrequest-tfplan@test
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
