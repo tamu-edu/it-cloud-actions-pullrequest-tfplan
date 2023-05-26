@@ -11,4 +11,5 @@ jobs:
       
       - uses: tamu-edu/it-ae-actions-pullrequest-tfplan@test
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: test
