@@ -1,0 +1,16 @@
+name: Test Composite Action
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'SHA of the commit to test'
+        required: true
+        default: ${{ github.sha }}
+
+jobs:
+  test-workingdir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tamu-edu/it-ae-actions-pullrequest-tfplan@${{ inputs.sha }}
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
