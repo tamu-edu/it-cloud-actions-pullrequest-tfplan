@@ -11,7 +11,7 @@ inputs:
   working-directory:
     description: Working directory for the `run` actions
     required: false
-    default: '/'
+    default: ''
   terraform-version:
     description: Version of terraform to install
     required: false
