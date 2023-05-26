@@ -47,7 +47,7 @@ runs:
       uses: actions/upload-artifact@v3
       with:
         name: pr-${{ github.event.pull_request.number }}-tfplan
-        path: ${{ join([github.workspace, inputs.working-directory], '/') }}/tfplan
+        path: ${{ join(fromJson('[github.workspace, inputs.working-directory]'), '/') }}/tfplan
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
 
