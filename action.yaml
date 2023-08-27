@@ -76,7 +76,7 @@ runs:
       env:
         TF_WORKSPACE: ${{ inputs.terraform-workspace }}
       run: |
-        terraform plan -out=tfplan
+        terraform plan -out=tfplan -input=false
       continue-on-error: true
 
     - name: generate tf-summarize table
