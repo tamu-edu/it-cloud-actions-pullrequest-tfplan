@@ -24,6 +24,11 @@ inputs:
     description: CLI flags to use with terraform init
     required: false
     default: ""
+  terraform-plan-flags:
+    description: CLI flags to use with terraform plan
+    required: false
+    default: ""
+
 
 outputs:
   plan:
@@ -76,7 +81,7 @@ runs:
       env:
         TF_WORKSPACE: ${{ inputs.terraform-workspace }}
       run: |
-        terraform plan -out=tfplan -input=false
+        terraform plan -out=tfplan -input=false ${{ inputs.terraform-plan-flags }}
       continue-on-error: true
 
     - name: generate tf-summarize table
