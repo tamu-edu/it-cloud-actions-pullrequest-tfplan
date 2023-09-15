@@ -78,8 +78,6 @@ runs:
       id: plan
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      env:
-        TF_WORKSPACE: ${{ inputs.terraform-workspace }}
       run: |
         terraform workspace select ${{ inputs.terraform-workspace }}
         terraform plan -out=tfplan -input=false ${{ inputs.terraform-plan-flags }}
