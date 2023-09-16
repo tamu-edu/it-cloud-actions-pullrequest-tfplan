@@ -80,6 +80,7 @@ runs:
       working-directory: ${{ inputs.working-directory }}
       env:
         TF_WORKSPACE: ${{ inputs.terraform-workspace }}
+        TF_IN_AUTOMATION: "true"
       run: |
         terraform plan -out=tfplan -input=false ${{ inputs.terraform-plan-flags }}
       continue-on-error: true
