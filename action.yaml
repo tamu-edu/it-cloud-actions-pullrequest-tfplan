@@ -49,11 +49,11 @@ runs:
       shell: bash
       run: |
         REPO="dineshba/terraform-plan-summary"
-        curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.zip
+        curl -LO https://github.com/$REPO/releases/latest/download/tf-summarize_linux_amd64.tar.gz
         tmpDir=$(mktemp -d -t tmp.XXXXXXXXXX)
-        mv tf-summarize_linux_amd64.zip $tmpDir
+        mv tf-summarize_linux_amd64.tar.gz $tmpDir
         cd $tmpDir
-        unzip tf-summarize_linux_amd64.zip
+        unztar -xzf tf-summarize_linux_amd64.tar.gz
         chmod +x tf-summarize
         echo $PWD >> $GITHUB_PATH
 
