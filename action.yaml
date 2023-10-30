@@ -53,7 +53,7 @@ runs:
         tmpDir=$(mktemp -d -t tmp.XXXXXXXXXX)
         mv tf-summarize_linux_amd64.tar.gz $tmpDir
         cd $tmpDir
-        unztar -xzf tf-summarize_linux_amd64.tar.gz
+        tar -xzf tf-summarize_linux_amd64.tar.gz
         chmod +x tf-summarize
         echo $PWD >> $GITHUB_PATH
 
