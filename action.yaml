@@ -17,7 +17,7 @@ inputs:
     required: false
     default: latest
   terraform-workspace:
-    description: Terraform workspace to select. Must already exist 
+    description: Terraform workspace to select. Must already exist
     required: false
     default: default
   terraform-init-flags:
@@ -81,8 +81,7 @@ runs:
       env:
         TF_WORKSPACE: ${{ inputs.terraform-workspace }}
         TF_IN_AUTOMATION: "true"
-      run: |
-        terraform plan -out=tfplan -input=false ${{ inputs.terraform-plan-flags }}
+      run: terraform plan -out=tfplan -input=false ${{ inputs.terraform-plan-flags }} |& tee tf_plan.txt
       continue-on-error: true
 
     - name: generate tf-summarize table
@@ -103,7 +102,8 @@ runs:
       uses: tamu-edu/it-ae-actions-terraform-pr-commenter@dev
       with:
         commenter_type: plan
-        commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
+        terraform_version: ${{ inputs.terraform-version }}
+        commenter_plan_path: ${{ github.workspace }}/${{ inputs.working-directory }}/tf_plan.txt
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
         comment_prepend: ${{ steps.summary.outputs.table }}
       env:
