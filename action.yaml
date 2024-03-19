@@ -98,6 +98,7 @@ runs:
         echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Check for tfplan file
+      shell: bash
       if: steps.plan.outputs.exitcode == 0
       run: cat ${{ github.workspace }}/${{ inputs.working-directory }}/tf_plan.txt
 
