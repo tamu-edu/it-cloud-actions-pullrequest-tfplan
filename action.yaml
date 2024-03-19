@@ -108,7 +108,7 @@ runs:
       with:
         commenter_type: plan
         terraform_version: ${{ inputs.terraform-version }}
-        commenter_plan_path: ${{ github.workspace }}/${{ inputs.working-directory }}/tf_plan.txt
+        commenter_plan_path: tf_plan.txt
         commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
         comment_prepend: ${{ steps.summary.outputs.table }}
       env:
