@@ -106,6 +106,7 @@ runs:
       if: ${{ github.event_name == 'pull_request' }}
       uses: tamu-edu/it-cloud-actions-terraform-pr-commenter@account-hub
       with:
+        working-directory: ${{ inputs.working-directory }}
         commenter_type: plan
         terraform_version: ${{ inputs.terraform-version }}
         commenter_plan_path: tf_plan.txt
